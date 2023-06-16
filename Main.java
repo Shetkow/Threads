@@ -3,6 +3,7 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
+        Thread threadForTexts = new Thread();
         String[] texts = new String[25];
         for (int i = 0; i < texts.length; i++) {
             texts[i] = generateText("aab", 30_000);
@@ -12,7 +13,7 @@ public class Main {
         List<Thread> threads = new ArrayList<>();
 
         for (String text : texts) {
-            Thread thread1 = new Thread(() -> {
+            threadForTexts = new Thread(() -> {
                 int maxSize = 0;
                 for (int i = 0; i < text.length(); i++) {
                     for (int j = 0; j < text.length(); j++) {
@@ -33,16 +34,17 @@ public class Main {
                 }
                 System.out.println(text.substring(0, 100) + " -> " + maxSize);
             });
-            thread1.start();
-            threads.add(thread1);
-            for (Thread thread : threads) {
-                thread.join(); // зависаем, ждём когда поток объект которого лежит в thread завершится
-            }
 
-            long endTs = System.currentTimeMillis(); // end time
-
-            System.out.println("Time: " + (endTs - startTs) + "ms");
         }
+        threadForTexts.start();
+        threads.add(threadForTexts);
+        for (Thread thread : threads) {
+            thread.join(); // зависаем, ждём когда поток объект которого лежит в thread завершится
+        }
+
+        long endTs = System.currentTimeMillis(); // end time
+
+        System.out.println("Time: " + (endTs - startTs) + "ms");
     }
 
     public static String generateText(String letters, int length) {
